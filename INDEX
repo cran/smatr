@@ -1,0 +1,19 @@
+elev.com                Test for equal elevation among several lines
+                        fitted with (standardised) major axes of common
+                        slope
+elev.test               One-sample test of a (standardised) major axis
+                        elevation
+leafmeas                Leaf mass per area and photosynthetic rate for
+                        plant species from different sites
+line.cis                Slope and elevation of a (standardised) major
+                        axis, with confidence intervals
+meas.est                Measurement error variance estiamtion from
+                        repeated measures
+seedwts                 log(weights) of the seeds dispersed by
+                        different methods
+shift.com               Test for no mean shift along a common
+                        (standardised) major axis
+slope.com               Common slope test amongst several allometric
+                        lines
+slope.test              One-sample test of a (standardised) major axis
+                        slope
