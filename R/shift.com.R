@@ -12,8 +12,9 @@ shift.com <- function( y, x, groups, data=NULL, method="SMA", intercept=TRUE,  V
 
     nobs <- length(groups)
     g    <- length(group.names)
+    inter<- intercept
 
-    res  <- slope.com( y, x, groups, method, intercept=TRUE, V=V, ci=FALSE, bs=FALSE )
+    res  <- slope.com( y, x, groups, method, intercept=inter, V=V, ci=FALSE, bs=FALSE )
     lr   <- res$lr
     p    <- res$p
     b    <- res$b
@@ -61,9 +62,7 @@ shift.com <- function( y, x, groups, data=NULL, method="SMA", intercept=TRUE,  V
     L[,n>1] <- cbind( matrix( 1, df, 1), diag( array( -1, df), nrow=df ) )
     stat  <- t(L%*%as)%*%solve(L%*%varAs%*%t(L), tol=1.0e-050 )%*%(L%*%as)
 
-    # list( varAxis=varAxis, n=n, varb=varb, means=means )
-
-    pvalue <- 1 - pchisq( stat, df )    # remove during sims
+    pvalue <- 1 - pchisq( stat, df )
 
     if ( is.null(data)==FALSE )
     {

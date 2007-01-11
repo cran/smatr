@@ -31,7 +31,7 @@ elev.test <- function( y, x, test.value=0, data=NULL, alpha=0.05, method="SMA", 
         fac     <- vr[1,1] - vr[2,2]
         b       <- ( fac + sqrt( fac^2 + 4*vr[1,2]^2) ) / 2 / vr[1,2]
         var.res <- ( vr[1,1] - 2*b*vr[1,2] + b^2*vr[2,2] ) / res.df
-        var.fit <- ( b^2*vr[1,1] + 2*b*vr[1,2] + vr[2,2] ) / res.df / ( 1 + b^2 )
+        var.fit <- ( b^2*vr[1,1] + 2*b*vr[1,2] + vr[2,2] ) / res.df
         var.b   <- 1 / ( var.res/var.fit + var.fit/var.res - 2)*( 1 + b^2 )^2 / res.df    # Use Fisher info
     }
 
