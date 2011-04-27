@@ -69,6 +69,6 @@ shift.com <- function( y, x, groups, data=NULL, method="SMA", intercept=TRUE,  V
         detach(data)
     }
 
-    list( stat=stat, p=pvalue, f.mean=as.vector(as) )
+    list( stat=stat, p=pvalue, f.mean=as.vector(as), df=df )
 
 }

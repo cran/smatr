@@ -5,7 +5,7 @@
 \title{One-sample test of a (standardised) major axis slope}
 
 \description{Test if the slope of a major axis or standardised
- major axis equals a specific value}
+ major axis equals a specific value. This can now be done via \code{sma(y~x, slope.test=1)}, see help on \code{\link{sma}}.}
 
 \usage{
     slope.test(y, x, test.value = 1, data=NULL, method = SMA,
@@ -60,14 +60,21 @@ The test assumes the following:
     \item residuals independently follow a normal distribution with equal variance at all points along the line
   }      
 
-These assumptions can be visually checked by plotting residuals against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution.  An appropriate residual variable is y-bx, and for fitted axis scores use x (for linear regression), y+bx (for SMA) or by+x (for MA), where b represents the estimated slope.
+The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using the \code{\link{plot.sma}} function.
 
-Reference - Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press)
+}
+
+\references{ 
+
+Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291.
+
+Taskinen S. and Warton D. I. (in press) Robust estimation and inference for bivariate line-fitting in allometry.  \emph{Biometrical Journal}.
+
 }
 
 \author{Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08}
 
-\seealso{\code{\link{line.cis}}, \code{\link{elev.test}} }
+\seealso{\code{\link{sma}}, \code{\link{line.cis}}, \code{\link{elev.test}} }
 
 \examples{
 #load the leaflife dataset:

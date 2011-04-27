@@ -1,5 +1,6 @@
 
-slope.com <- function( y, x, groups, method="SMA", alpha=0.05, data=NULL, intercept=TRUE, V=array( 0, c( 2,2,length(unique(groups)) ) ), group.names=sort(unique(groups)), ci=TRUE, bs=TRUE )
+slope.com <- function( y, x, groups, method="SMA", alpha=0.05, data=NULL, intercept=TRUE, V=array( 0, c( 2,2,length(unique(groups)) ) ), 
+	group.names=sort(unique(groups)), ci=TRUE, bs=TRUE, slope.test=NULL )
 {
     if ( nargs() < 3 )
     {
@@ -47,6 +48,7 @@ slope.com <- function( y, x, groups, method="SMA", alpha=0.05, data=NULL, interc
         { res.df <- n-1 }
     else
         { res.df <- n-2 }
+#    res.df = res.df + as.numeric( is.null(slope.test)==F ) #to add one to df if slope is given a priori.
 
     if ( is.null(data)==FALSE )
     {
@@ -55,8 +57,15 @@ slope.com <- function( y, x, groups, method="SMA", alpha=0.05, data=NULL, interc
 
     # Find common slope:
     lambda <- 1 #only actually used for the major axis.
-    res    <- b.com.est( z, n, method, lambda, res.df=res.df )
-
+    if (is.null(slope.test))
+    {
+        res    <- b.com.est( z, n, method, lambda, res.df=res.df )
+    }
+    else #input slope.test as common slope value.
+    {
+        if ( (method==1) | (method=='SMA') ) { lambda <- slope.test^2 }
+        res <- list(b=slope.test, bi=slope.test, l1=NA, l2=NA, lambda=lambda )
+    }
     # Calculate LR:
     dets <- z[,1]*z[,2] - z[,3]^2 #This is l1*l2 under Halt.
     arguments <- list( l1=dets, l2=1, z=z, n=n, method=method, crit=0, lambda=lambda, res.df=res.df)
@@ -64,13 +73,13 @@ slope.com <- function( y, x, groups, method="SMA", alpha=0.05, data=NULL, interc
     # if lambda is being estimated, check endpoint LR values:
     if ( (method==3) | ( method=='lamest' ) )
     {
-        res0     <- b.com.est( z, n, 2, lambda=10^-9, res.df ) # to find est when lambda=0
+        res0      <- b.com.est( z, n, 2, lambda=10^-9, res.df ) # to find est when lambda=0
         arguments <- list( l1=dets, l2=1, z=z, n=n, method=method, crit=0, lambda=10^-9, res.df=res.df)
-        LR0      <- lr.b.com(res0$b, arguments) 
-        resInf   <- b.com.est( z, n, 2, 10^9, res.df ) # to find est when lambda=inf
+        LR0       <- lr.b.com(res0$b, arguments) 
+        resInf    <- b.com.est( z, n, 2, 10^9, res.df ) # to find est when lambda=inf
         arguments <- list( l1=dets, l2=1, z=z, n=n, method=method, crit=0, lambda=10^9, res.df=res.df)
-        LRinf    <- lr.b.com(resInf$b, arguments) 
-        LR       <- min(LR,LR0,LRinf)
+        LRinf     <- lr.b.com(resInf$b, arguments) 
+        LR        <- min(LR,LR0,LRinf)
         if ( LR==LR0 )    { res <- res0 }
         if ( LR==LRinf )  { res <- resInf }
     }
@@ -83,39 +92,55 @@ slope.com <- function( y, x, groups, method="SMA", alpha=0.05, data=NULL, interc
     lambda <- res$lambda
 
     # Calculate P-value:
-    Pvalue <- 1 - pchisq( LR, g - 1 - sum(n==1) ) #don't count any singleton groups in df
+    if (is.null(slope.test))
+    {
+        df <- g - 1 - sum(n<=1)  #don't count any singleton or empty groups in df
+    }
+    else
+    {
+        df <- g - sum(n<=1)  #if common slope is given, don't subtract a df for its estimation
+    }
+    Pvalue <- 1 - pchisq( LR, df )
 
-    # Calculate a CI for common slope
-    if ( (method==1) | (method=='SMA') )
+    # Calculate a CI for common slope, if estimated
+    if (is.null(slope.test))
     {
-       # Getting variance of common slope
-       varBs <- ( z[,1] - (z[,3]^2)/z[,2] ) / z[,2]
-       varBs <- varBs / res.df
-    } else
-    if ( (method==2) | (method=='MA') )
-    {
-       varBs <- 1 / ( l2/l1 + l1/l2 - 2)*( lambda + b^2)^2
-       varBs <- varBs / res.df
+        if ( (method==1) | (method=='SMA') )
+        {
+           # Getting variance of common slope
+           varBs <- ( z[,1] - (z[,3]^2)/z[,2] ) / z[,2]
+           varBs <- varBs / res.df
+        } else
+        if ( (method==2) | (method=='MA') )
+        {
+           varBs <- 1 / ( l2/l1 + l1/l2 - 2)*( lambda + b^2)^2
+           varBs <- varBs / res.df
+        }
+        if ( (method==3) | (method=='lamest') )
+        #Still work to be done to calculate CI for lamest.
+        {
+           varBs <- NA
+        }
+        varB <- 1 / sum( 1 / varBs, na.rm=TRUE )
     }
-    if ( (method==3) | (method=='lamest') )
-    #Still work to be done to calculate CI for lamest.
+    else
     {
-       varBs <- NA
+        varB <- NA
+        ci   <- FALSE
     }
-    varB <- 1 / sum( 1 / varBs, na.rm=TRUE )
 
     crit <- qchisq( 1 - alpha, 1 )
     if ( (method==3) | (method=='lamest') )
     {
-       ci = FALSE
+       ci <- FALSE
     }
     bCI=NA
     if ( ci == TRUE )
     {
        bCI  <- com.ci( b, varB, crit, z, n, l1, l2, method, lambda, res.df )
     }
-    if (lambda==10^-9) { lambda=0 }
-    if (lambda==10^9) { lambda=Inf }
-    list( LR=LR, p=Pvalue, b=b, ci=bCI, varb=varB, lambda=lambda, bs=bs )
+    if (lambda==10^-9) { lambda <- 0 }
+    if (lambda==10^9) { lambda  <- Inf }
+    list( LR=LR, p=Pvalue, b=b, ci=bCI, varb=varB, lambda=lambda, bs=bs, df=df )
 }
 

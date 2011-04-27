@@ -4,10 +4,11 @@
 
 \title{Test for no mean shift along a common (standardised) major axis}
 
-\description{Test if several groups of observations have no shift in location along major axis or standardised major axis lines with a common slope.}
+\description{Test if several groups of observations have no shift in location along major axis or standardised major axis lines with a common slope. This can now be done via \code{sma(y~x+groups, type="shift")}, see help on the \code{\link{sma}} function.}
 
-\usage{shift.com( y, x, groups, data = NULL, method = 'SMA', intercept = TRUE,
-   V=array( 0, c( 2,2,length(unique(groups)) ) ), group.names=sort(unique(groups)) )}
+\usage{shift.com( y, x, groups, data = NULL, method = 'SMA', 
+   intercept = TRUE, V=array( 0, c( 2,2,length(unique(groups)))), 
+   group.names=sort(unique(groups)) )}
 
 \arguments{
   \item{y}{The Y-variable for all observations (as a vector)}
@@ -50,18 +51,22 @@ The test assumes the following:
   }
 Note that we do not need to assume equal variance across groups, unlike in tests comparing several linear regression lines.
 
-The assumptions can be visually checked by plotting residuals against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution.  An appropriate residual variable is y-bx, and for fitted axis scores y+bx (for SMA) or by+lx (for MA or `lamest'), where b represents the common slope estimate, and l the error variance ratio. If there is a distinct increasing or decreasing trend within any of the groups, this suggests that all groups do not share a common slope.
+The assumptions can be visually checked by plotting residuals against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using 
 
-A plot of residual scores against fitted axis scores can also be used as a visual test for common elevation. If fitted axis scores systematically differ across groups then this is evidence of a shift along the common axis.
+\code{plot.sma(sma.object,which="residual")}. 
+
+On a residual plot, if there is a distinct increasing or decreasing trend within any of the groups, this suggests that all groups do not share a common slope.
+
+A plot of residual scores against fitted axis scores can also be used as a visual test for no shift. If fitted axis scores systematically differ across groups then this is evidence of a shift along the common axis.
 
 The common slope (\eqn{\hat{\beta}}{b}) is estimated from a maximum of 100 iterations, convergence is reached when the change in \eqn{\hat{\beta}}{b} is \eqn{< 10^{-6}}{< 10^-6}.
 }
 
-\references{Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press)}
+\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291. }
 
 \author{Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08}
 
-\seealso{\code{\link{line.cis}}, \code{\link{elev.com}}, \code{\link{shift.com}}}
+\seealso{\code{\link{sma}}, \code{\link{plot.sma}}, \code{\link{line.cis}}, \code{\link{elev.com}}, \code{\link{shift.com}}}
 
 \examples{
 #load leaf longevity data

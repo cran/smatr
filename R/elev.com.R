@@ -1,5 +1,6 @@
 
-elev.com <- function( y, x, groups, data=NULL, method="SMA", alpha=0.05, V=array( 0, c( 2,2,length(unique(groups)) ) ), group.names=sort(unique(groups)) )
+elev.com <- function( y, x, groups, data=NULL, method="SMA", alpha=0.05, V=array( 0, c( 2,2,length(unique(groups)) ) ), 
+	group.names=sort(unique(groups)) )
 {
     if ( is.null(data)==FALSE )
     {
@@ -58,5 +59,5 @@ elev.com <- function( y, x, groups, data=NULL, method="SMA", alpha=0.05, V=array
         detach(data)
     }
 
-    list( stat=stat, p=pvalue , a=a, ci=a.ci, as=as )
+    list( stat=stat, p=pvalue , a=a, ci=a.ci, as=as, df=df )
 }

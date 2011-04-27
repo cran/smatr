@@ -1,18 +1,20 @@
 \name{elev.com}
 \alias{elev.com}
-\title{ Test for equal elevation among several lines fitted with (standardised) major axes of common slope }
+\title{ Test for equal elevation among several lines fitted with (standardised) major axes of common slope. }
 \description{
   Test if several major axis or standardised major axis lines share a common elevation. 
+  This can now be done via \code{sma(y~x+groups)}, see help on the \code{\link{sma}} function.
 }
 \usage{
 elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05,
-  V = array(0, c(2, 2, length(unique(groups)))), group.names = sort(unique(groups)))
+  V = array(0, c(2, 2, length(unique(groups)))),
+  group.names = sort(unique(groups)))
 }
 \arguments{
-  \item{y}{ The Y-variable for all observations (as a vector) }
-  \item{x}{ The X-variable for all observations (as a vector) }
-  \item{groups}{ Coding variable identifying which group each observation belongs to (as a factor or vector) }
-  \item{data}{ (optional) data frame containing the data }
+  \item{y}{ The Y-variable for all observations (as a vector). }
+  \item{x}{ The X-variable for all observations (as a vector). }
+  \item{groups}{ Coding variable identifying which group each observation belongs to (as a factor or vector). }
+  \item{data}{ (Optional) data frame containing the data. }
   \item{method}{ The line fitting method: 
     \describe{
       \item{'SMA' or 1}{ standardised major axis (this is the default) }
@@ -44,35 +46,33 @@ elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05,
   }
   Note that we do not need to assume equal variance across groups, unlike in tests comparing several linear regression lines.
 
-  The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution.  Residual scores can be obtained as y-bx, and for fitted axis scores y+bx (for SMA) or by+lx (for MA or `lamest'), where b represents the common slope estimate, and l the error variance ratio. If there is a distinct increasing or decreasing trend within any of the groups, this suggests that all groups do not share a common slope.
-
-  A plot of residual scores against fitted axis scores can also be used as a visual test for common elevation. If residual scores generally differ across groups (with some groups generally having larger residual scores than others) then this is evidence that the groups do not share a common elevation.
+  The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using the \code{\link{plot.sma}} function. On a residual plot, if there is a distinct increasing or decreasing trend within any of the groups, this suggests that all groups do not share a common slope.
 
   The common slope (\eqn{\hat{\beta}}{b}) is estimated from a maximum of 100 iterations, convergence is reached when the change in \eqn{\hat{\beta} < 10^{-6}}{b < 10^-6}.
 }
-\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press) }
+\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291. }
 \author{ Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08 }
 
-\seealso{ \code{\link{line.cis}}, \code{\link{slope.com}}, \code{\link{shift.com}} }
+\seealso{ \code{\link{sma}}, \code{\link{plot.sma}}, \code{\link{line.cis}}, \code{\link{slope.com}}, \code{\link{shift.com}} }
 
 \examples{
-#load leaf longevity data
+# Load leaf longevity data
 data(leaflife)
 
-#Test for common SMA slope amongst species at low rainfall sites
-#with different levels of soil nutrients
-leaf.low.rain=leaflife[leaflife$rain=='low',]
-slope.com(log10(longev), log10(lma), soilp, data=leaf.low.rain)
+# Test for common SMA slope amongst species at low soil nutrient sites
+# with different rainfall:
+leaf.low.soilp <- subset(leaflife, soilp == 'low')
+slope.com(log10(longev), log10(lma), rain, data=leaf.low.soilp)
 
-#Now test for common elevation of the groups fitted with an axis
-#of common slope, at low rainfall sites:
-elev.com(log10(longev), log10(lma), soilp, data = leaf.low.rain)
+# Now test for common elevation of the groups fitted with an axis
+# of common slope, at low soil nutrient sites:
+elev.com(log10(longev), log10(lma), rain, data = leaf.low.soilp)
 
-#Or test for common elevation amongst the MA's of common slope,
-#for low rainfall sites, and construct 99% a confidence interval
-#for the common elevation:
-elev.com(log10(longev), log10(lma), soilp, method='MA',
-    data = leaf.low.rain, alpha=0.01)  
+# Or test for common elevation amongst the MA's of common slope,
+# for low soil nutrient sites, and construct 99% a confidence interval
+# for the common elevation:
+elev.com(log10(longev), log10(lma), rain, method='MA',
+    data = leaf.low.soilp, alpha=0.01)  
 }
 
 \keyword{ htest }

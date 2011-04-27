@@ -2,12 +2,14 @@
 \alias{slope.com}
 \title{ Common slope test amongst several allometric lines }
 \description{
-  Test if several major axis or standardised major axis lines share a common slope
+  Test if several major axis or standardised major axis lines share a common slope. This can now be done via \code{sma(y~x*groups)}, see help on the \code{\link{sma}} function.
 }
 \usage{
-slope.com(y, x, groups, method = 'SMA', alpha = 0.05, data = NULL, intercept = TRUE,
-   V = array(0, c(2, 2, length(unique(groups)))), group.names = sort(unique(groups)),
-   ci = TRUE, bs = TRUE)
+slope.com(y, x, groups, method = 'SMA', alpha = 0.05, 
+   data = NULL, intercept = TRUE,
+   V = array(0, c(2, 2, length(unique(groups)))), 
+   group.names = sort(unique(groups)),
+   ci = TRUE, bs = TRUE, slope.test=NULL)
 }
 \arguments{
   \item{y}{ The Y-variable for all observations (as a vector) }
@@ -32,6 +34,7 @@ slope.com(y, x, groups, method = 'SMA', alpha = 0.05, data = NULL, intercept = T
   \item{group.names}{ (optional: rarely required). A vector containing the labels for `groups'. (Only actually useful for reducing computation time in simulation work). }
   \item{ci}{ (logical) Whether or not to return a confidence interval for the common slope. }
   \item{bs}{ (logical) Whether or not to return the slopes for the separate groups, with confidence intervals. }
+  \item{slope.test}{If a value provided, tests the common slope fit against this value.}
 }
 
 \value{
@@ -55,19 +58,17 @@ The test assumes the following:
   }
 Note that we do not need to assume equal variance across groups, unlike in the standard test for common slope for linear regression.
 
-The assumptions can be visually checked by plotting residuals against fitted axis scores, and by constructing a Q-Q plot* of residuals against a normal distribution.  An appropriate residual variable is \eqn{y-\hat{\beta}_i\times x}{y-b_i*x}, and for fitted axis scores \eqn{y+\hat{\beta}_i x}{y+b_i*x} (for SMA) or \eqn{\hat{\beta}_i y+lx}{b_i*y+lx} (for MA or `lamest'), where \eqn{\hat{\beta}_i}{b_i} represents the estimated slope for group i, and l the error variance ratio.
-
-If a plot of residuals against fitted axis scores is produced in which the estimated common slope (b) is used rather than the slopes estimated within each group (\eqn{\hat{\beta}_i}{b_i}), this can be used as a visual test for common slope. If there is a distinct increasing or decreasing trend within any of the groups, this suggests that all groups do not share a common slope.
+The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using the \code{\link{plot.sma}} function.
 
 The common slope is estimated from a maximum of 100 iterations, convergence is reached when the change in b is \eqn{< 10^{-6}}{< 10^-6}.
 }
 \references{ Warton D. I. and Weber N. C. (2002) Common slope tests for bivariate structural relationships.  \emph{Biometrical Journal} \bold{44}, 161--174.
 
-Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press)
+Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291.
 }
 \author{ Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08 }
 
-\seealso{ \code{\link{line.cis}}, \code{\link{elev.com}}, \code{\link{shift.com}} }
+\seealso{ \code{\link{sma}}, \code{\link{line.cis}}, \code{\link{elev.com}}, \code{\link{shift.com}} }
 
 \examples{
 #load leaf longevity data
@@ -88,9 +89,9 @@ fit <- slope.com(log10(longev), log10(lma), site, data = leaflife)
 fit
 
 #Residual vs fits plots for SMA fit of each site
-y = log10(leaflife$longev)
-x = log10(leaflife$lma)
-site=leaflife$site
+y <- log10(leaflife$longev)
+x <- log10(leaflife$lma)
+site <- leaflife$site
 par( mfrow=c(2,2) )
 plot(y[site==1] + fit$bs[1,1] * x[site==1], y[site==1] - fit$bs[1,1] 
    * x[site==1], xlab='fits (site 1)', ylab='residuals (site 1)')
@@ -103,7 +104,7 @@ plot(y[site==4] + fit$bs[1,4] * x[site==4], y[site==4] - fit$bs[1,4]
 
 #Test for common SMA slope amongst species at low rainfall sites
 #with different levels of soil nutrients
-leaf.low.rain=leaflife[leaflife$rain=='low',]
+leaf.low.rain <- leaflife[leaflife$rain=='low',]
 slope.com(log10(longev), log10(lma), soilp, data=leaf.low.rain)
 
 #test for common MA slope:

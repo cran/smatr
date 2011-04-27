@@ -2,7 +2,7 @@
 
 \alias{meas.est}
 
-\title{Measurement error variance estiamtion from repeated measures}
+\title{Measurement error variance estimation from repeated measures}
 
 \description{Estimates the average variance matrix of measurement error for a set of subjects with repeated measures.}
 
@@ -29,7 +29,8 @@ Any number of variables can be specified in the data matrix for measurement erro
 
 As well as the estimated measurement error variance, a data matrix is returned which contains the averages of the repeated measures for each subject.
 }
-\references{Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press)}
+\references{Warton, D.I., I.J. Wright, D.S. Falster and M. Westoby. 2006. Bivariate line-fitting methods for allometry. \emph{Biological Reviews} \bold{81}, 259--291.
+}
 
 \author{Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08}
 

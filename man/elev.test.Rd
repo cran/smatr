@@ -5,7 +5,8 @@
 \title{One-sample test of a (standardised) major axis elevation}
 
 \description{Test if the elevation of a major axis or standardised
- major axis equals a specific value}
+ major axis equals a specific value. This can now be done via \code{sma(y~x,elev.test=0)}, 
+ see help on the \code{\link{sma}} function.}
 
 \usage{
     elev.test(y, x, test.value = 0, data = NULL, alpha = 0.05,
@@ -29,19 +30,19 @@
   }
 
 \value{
-    \item{t}{The test statistic - a t statistic.}
+    \item{t}{The test statistic (a t-statistic).}
     \item{p}{The P-value, taken from the \eqn{t_{n-2}}{t_(n-2)}-distribution. This is an exact test if residuals are normally distributed.}
-    \item{test.value}{The hypothesised value of the elevation}
-    \item{a}{The estimated elevation}
+    \item{test.value}{The hypothesised value of the elevation.}
+    \item{a}{The estimated elevation.}
     \item{ci}{A 100(1-alpha)\% CI for the slope.}
   }
 
 \details{
-Tests if the line relating y to x has an elevation equal to test.value (which has a default value of 0). The line can be a linear regression line, major axis or standardised major axis (as selected using the input argument choice). The test is carried out usinga t-statistic, comparing the difference between estimated and hypothesised elevation to the standard error of elevation. As described in Warton et al (in review).
+Tests if the line relating y to x has an elevation equal to test.value (which has a default value of 0). The line can be a linear regression line, major axis or standardised major axis (as selected using the input argument choice). The test is carried out usinga t-statistic, comparing the difference between estimated and hypothesised elevation to the standard error of elevation. As described in Warton et al (2006).
 
 A confidence interval for the elevation is also returned, again using the t-distribution.
 
-If measurement error is present, it can be corrected for through use of the input argument V, which makes adjustments to the estimated sample variances and covariances then proceeds with the same method of inference. Note, however, that this method is only approximate (see Warton et al in review for more details).
+If measurement error is present, it can be corrected for through use of the input argument V, which makes adjustments to the estimated sample variances and covariances then proceeds with the same method of inference. Note, however, that this method is only approximate (see Warton et al 2006 for more details).
 
 The test assumes the following:
   \enumerate{
@@ -49,20 +50,20 @@ The test assumes the following:
     \item residuals independently follow a normal distribution with equal variance at all points along the line
   }      
 
-These assumptions can be visually checked by plotting residuals against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution.  An appropriate residual variable is y-bx, and for fitted axis scores use x (for linear regression), y+bx (for SMA) or by+x (for MA), where b represents the estimated slope.
+The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using the \code{\link{plot.sma}} function.
 }
-\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press) }
+\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291. }
 
 \author{ Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08 }
 
-\seealso{\code{\link{line.cis}}, \code{\link{slope.test}} }
+\seealso{\code{\link{sma}}, \code{\link{line.cis}}, \code{\link{slope.test}} }
 
 \examples{
 #load the leaflife dataset:
 data(leaflife)
 
 #consider only the low rainfall sites:
-leaf.low.rain=leaflife[leaflife$rain=="low",]
+leaf.low.rain <-  subset(leaflife, rain=="low")
 
 #construct a plot
 plot(log10(leaf.low.rain$lma), log10(leaf.low.rain$longev),

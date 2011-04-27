@@ -5,11 +5,12 @@
 \title{Slope and elevation of a (standardised) major axis, with confidence intervals}
 
 \description{Calculates the slope and elevation of a major axis or standardised
- major axis, and constructs confidence intervals for the true slope and elevation}
+ major axis, and constructs confidence intervals for the true slope and elevation. This can now be fitted via calls of the form \code{sma(y~x, ...)}, see \code{\link{sma}}.}
 
 \usage{
-line.cis(y, x, alpha = 0.05, data = NULL, method = "SMA", intercept = TRUE,
-  V = matrix(0, 2, 2), f.crit = 0)
+line.cis(y, x, alpha = 0.05, data = NULL, 
+	method = "SMA", intercept = TRUE, robust=FALSE,
+	V = matrix(0, 2, 2), f.crit = 0)
 }
 
 \arguments{
@@ -31,6 +32,7 @@ line.cis(y, x, alpha = 0.05, data = NULL, method = "SMA", intercept = TRUE,
       \item{TRUE}{ an intercept is fitted (this is the default) }
     }
   }
+  \item{robust}{If TRUE, uses a robust method to fit the lines.}
   \item{f.crit}{(optional - rarely required). The critical value to be used from the F distribution. (Only actually useful for reducing computation time in simulation work - otherwise, do not change.) }
 }
 
@@ -53,11 +55,12 @@ The test assumes the following:
 
 These assumptions can be visually checked by plotting residuals against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution.  An appropriate residual variable is y-bx, and for fitted axis scores use x (for linear regression), y+bx (for SMA) or by+x (for MA), where b represents the estimated slope.
 }
-\references{Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} (in press)}
+\references{Warton, D.I., I.J. Wright, D.S. Falster and M. Westoby. 2006. Bivariate line-fitting methods for allometry. \emph{Biological Reviews} \bold{81}, 259--291.
+}
 
 \author{Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08}
 
-\seealso{\code{\link{slope.test}}, \code{\link{elev.test}} }
+\seealso{\code{\link{sma}}, \code{\link{slope.test}}, \code{\link{elev.test}} }
 
 \examples{
 #load the leaflife data
