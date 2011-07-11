@@ -1,5 +1,5 @@
 
-line.cis <- function( y, x, alpha=0.05, data=NULL, method="SMA", intercept=TRUE, robust=FALSE, V=matrix(0,2,2), f.crit=0 )
+line.cis <- function( y, x, alpha=0.05, data=NULL, method="SMA", intercept=TRUE, robust=FALSE, V=matrix(0,2,2), f.crit=0,...)
 {
 
     # instead of attaching

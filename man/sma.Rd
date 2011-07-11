@@ -14,7 +14,8 @@ the presence of outliers (currently implemented for single samples only).}
 \usage{
 sma(formula, data, subset, na.action, log='',
 	 method=c("SMA","MA","OLS"), type=c("elevation","shift"), alpha=0.05, 
-	 slope.test=NA, elev.test=NA,  robust=FALSE,V=matrix(0,2,2),
+	 slope.test=NA, elev.test=NA, multcomp=FALSE, multcompmethod=c("default","adjusted"),
+	 robust=FALSE,V=matrix(0,2,2), 
 	 ...)
 }
 
@@ -32,6 +33,8 @@ sma(formula, data, subset, na.action, log='',
   \item{robust}{If TRUE, uses a new method of robust line fitting. (Currently available for single-sample testing only.)}
   \item{V}{The estimated variance matrix of measurement error. Average measurement error for Y is in the first row and column, and average measurement error for X is in the second row and column. 
            The default is that there is no measurement error.}
+  \item{multcomp}{Logical. If TRUE, performs pair-wise comparisons between levels of the grouping variable.}
+  \item{multcompmethod}{Whether to adjust the P values for multiple comparisons ('adjusted') or not ('default').}
   \item{\dots}{Further arguments passed to internal functions (none at the moment?)}
 }
   
@@ -65,6 +68,11 @@ The below options allow estimation of several (S)MA lines, confidence intervals 
 In all cases, estimates and confidence intervals for key parameters are returned, and if a hypothesis test is done, results will be returned and stored in the \code{slope.test} or \code{elev.test} output arguments.
 
 The \code{\link{plot}} function can be applied to objects produced using the \code{sma} and \code{ma} functions, which is highly recommended to visualise results and check assumptions.
+
+\bold{Multiple comparisons}
+If multcomp=TRUE, pair-wise comparisons are made between levels of the grouping variable for differences in slope, elevation or shift, depending on the formula used.
+The P values can be adjusted for multiple comparisons (using the Sidak correction). See also \code{\link{multcompmatrix}} for visualization of the results.
+\bold{Warning:} When using the multiple comparisons (multcomp=TRUE), you must specify a \code{data} statement. If your variables are not in a dataframe, simply combine them in a dataframe before calling \code{sma}.
 }
 
 \value{

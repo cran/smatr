@@ -1,11 +1,13 @@
 
 sma <- function(formula, data, subset, na.action, log='',
 	 method=c("SMA","MA","OLS"), type=c("elevation","shift"), alpha=0.05, 
-	 slope.test=NA, elev.test=NA, robust=FALSE,V=matrix(0,2,2),
+	 slope.test=NA, elev.test=NA, multcomp=FALSE, multcompmethod=c("default","adjusted"),
+	 robust=FALSE,V=matrix(0,2,2),
 	 ...)
 {
 	method <- match.arg(method)
 	type <- match.arg(type)
+	multcompmethod <- match.arg(multcompmethod)
 	
 	# Model frame (code borrowed from 'lm')
 	mf <- match.call(expand.dots = FALSE)
@@ -15,8 +17,41 @@ sma <- function(formula, data, subset, na.action, log='',
     mf[[1L]] <- as.name("model.frame")
 	mf <- eval(mf, parent.frame())
 
+	# Throw out groups with <3 observations, if a grouping variable is used.
+	# (Otherwise, there are in total 2 rows of data, surely no user is that daft).
+	if(ncol(mf) == 3){
+	tab <- table(mf[,3])
+	if(any(tab < 3)){
+		
+		thislevel <- levels(mf[,3])[which(tab < 3)]
+		mf <- mf[!(mf[,3] %in% thislevel),]
+		mf <- droplevels(mf)
+		attributes(mf)$row.names <- rownames(mf)
+		cat("Warning: dropped level of grouping variable (sample size < 3) :",names(mf)[3]," = ",thislevel,"\n")
+	}
+	}
+	
 	# Log-transform 
 	log <- tolower(log)
+	
+	# Throw out zeroes and negative values.
+	xdel <- FALSE
+	ydel <- FALSE
+	if(log == "xy" || log == "y"){
+		if(any(mf[,1] <= 0)){
+			ind <- which(mf[,1] <= 0)
+			ydel <- TRUE
+			mf <- droplevels(mf[-ind,])
+		}
+	}
+	if(log == "xy" || log == "x"){
+		if(any(mf[,2] <= 0)){
+			ind <- which(mf[,2] <= 0)
+			xdel <- TRUE
+			mf <- droplevels(mf[-ind,])
+		}
+	}
+	
 	if(log == "x")mf[,2] <- log10(mf[,2])
 	if(log == "y")mf[,1] <- log10(mf[,1])
 	if(log == "xy"){
@@ -49,68 +84,15 @@ sma <- function(formula, data, subset, na.action, log='',
 		warning("Formula not supported by sma() and/or ma(), and is ignored.")
 		grouptest <- "none"
 	}
-	
 
-	
 	# Check for intercept. Also note that it is not allowed to drop the intercept for some group tests,
 	# but this is not yet tested here!
 	intercept <- if(attr(mt, "intercept") == 0) FALSE else TRUE
 	
-	# If using OLS, simply use this as a wrapper to lm:
-	# !!! Orphan code. Not necessary (but too lazy to remove {}'s)
-	if(method == "OLSz"){
-		
-		# X <- mf[,2]
-		# Y <- mf[,1]
-		
-		# if(grouptest != "none")
-			# stop("If using OLS, cannot perform common slope or elevation tests. Please use 'lm' for full functionality\n")
-		
-		# if(intercept)
-			# lmfit <- lm(Y ~ X)
-		# else
-			# lmfit <- lm(Y ~ X - 1)
-		
-		# cis <- confint(lmfit, level=1-alpha)
-		# coeff <- coef(lmfit)
-		# if(intercept)
-			# coeff <- cbind(coef(lmfit), confint(lmfit))
-		# else
-			# coeff <- rbind(c(NA,NA,NA),cbind(coef(lmfit), confint(lmfit)))
-			
-		# rownames(coeff) <- c("elevation","slope")
-		# colnames(coeff) <- c("coef(OLS)","lower limit","upper limit")
-		# coeff <- list(coeff) # to be consistent with below implementation (results always stored in list)
-		
-		# commonslopetest <- NA
-		# lmsumm <- summary(lmfit)
-		
-		# lv <- NA
-		# grouptest <- "none"
-		# grouptestresult <- NA
-		# commoncoef <- NA
-		# commonslopetestval <- NA
-		# slopetest <- NA
-		# elevtest <- NA
-		# slopetestdone <- FALSE
-		# elevtestdone <- FALSE
-		# n <- list(nrow(mf))
-		# r2 <- list(lmsumm$r.squared)
-		# pval <- list(if(intercept)lmsumm$coefficients[2,4] else lmsumm$coefficients[1,4])
-		# from <- list(min(X))
-		# to <- list(max(X))
-		# ngroups <- 1
-		
-	} else {
-	
-	
-	
 	# Halt execution when robust=T and no intercept.
 	if(robust & !intercept)stop("Cannot perform robust estimation when no intercept included.")
 	
-	
 	#Determine grouping 
-	
 	if(grouptest %in% c("elevcom","shiftcom","slopecom")){
 		ngroups <- nlevels(mf[,3])
 		
@@ -136,7 +118,6 @@ sma <- function(formula, data, subset, na.action, log='',
 		commonslopetestval <- NA
 		}
 		
-		
 		#run group tests
 		if(grouptest == "elevcom"){
 			if(!intercept)stop("Cannot perform elevation test without fitted intercept.")
@@ -148,7 +129,6 @@ sma <- function(formula, data, subset, na.action, log='',
 		if(grouptest == "slopecom")grouptestresult <- ""  #<-- already stored in commonslopetest
 		
 		}
-		
 	 }
 	else{
 	
@@ -178,12 +158,6 @@ sma <- function(formula, data, subset, na.action, log='',
 		#sma coefficients 
 		coeff[[i]] <- line.cis(Y,X,intercept=intercept, method=method, 
 			alpha=alpha, robust=robust, ...)   
-	
-		# if(!is.na(forced_slope)){ #force line of given slope through data
-			# coeff[[i]][2,] <- c(forced_slope,NA, NA);
-			# if(intercept)
-				# coeff[[i]][1,] <- c(mean(Y)-forced_slope*mean(X), NA,NA)
-		# }	
 
 		# correlation and P-value
 		if(intercept){
@@ -244,12 +218,8 @@ sma <- function(formula, data, subset, na.action, log='',
 		names(from) <- lv
 		names(to) <- lv
 	}
-	
-	}  # if(method == OLS)
-	
-	
+
 	# coefficients under H0 (nullcoef)
-	
 	nullcoef <- NA
 	if(grouptest == "none" & slopetestdone){   # sm2
 		b <- slope.test
@@ -305,14 +275,7 @@ sma <- function(formula, data, subset, na.action, log='',
 			Y <- mf[grps == lv[i],1]
 			a <- mean(Y) - bcom*mean(X)
 			b <- bcom
-			# varb <- commonslopetest$varb
-			# vara <- 
-			         # var.a    <- var.res/n + var.b*means[2]^2
-       # cis[1,1] <- a - sqrt(var.a)*sqrt(f.crit)
-       # cis[1,2] <- a + sqrt(var.a)*sqrt(f.crit)
-			
-			# vr <- ( var(datm) - V )*(n-1) 
-			
+
 			coeff[[i]][,1] <- c(a,b)
 			coeff[[i]][2,2:3] <- commonslopetest$ci
 			
@@ -331,8 +294,6 @@ sma <- function(formula, data, subset, na.action, log='',
 			nullcoef <- coeff
 		}
 	}
-	
-	
 	
 	l <- list()
 	l$coef <- coeff
@@ -372,9 +333,114 @@ sma <- function(formula, data, subset, na.action, log='',
 					 Elev_test = if(all(is.na(elevtest)))NA else f(l$elevtest[[i]]$test.value),
 					 Elev_test_p= if(all(is.na(elevtest)))NA else f(l$elevtest[[i]]$p))
 	}
-	l$groupsummary <- as.data.frame(do.call("rbind",sm))
+	tmp <- as.data.frame(do.call("rbind",sm))
+	l$groupsummary <- as.data.frame(lapply(tmp, unlist))
 	
 	class(l) <- "sma"
+	
+	
+	if(multcomp & ngroups == 2)
+		warning("Multiple comparisons not performed, because there are only two groups (there is only one comparison to do)!")
+	
+	if(multcomp & ngroups > 2){
+	
+		# Pairwide group combinations:
+		pairmat <- combn(l$groups, 2)
+		npairs <- ncol(pairmat)
+		paircall <- list()
+		
+		# Call sma with a data subsets:
+		for(k in 1:npairs){
+			
+			# List of arguments as 'sma' was called.
+			thiscall <- as.list(match.call(expand.dots = TRUE))[-1]
+			
+			# Set multcomp to FALSE
+			thiscall$multcomp <- FALSE
+			
+			# Make data subset.
+			#datasubs <- mf[mf[,3] %in% pairmat[,k],]
+			datasubs <- data[data[,l$groupvarname] %in% pairmat[,k],]
+			datasubs <- droplevels(datasubs)  # drop empty levels.
+			thiscall$data <- datasubs
+			
+			# Set dummy argument, to keep track of what type of call this is:
+			thiscall$dummy <- TRUE
+			
+			# Re-Call sma, using the data subset.
+			paircall[[k]] <- do.call(what="sma", args=thiscall)
+		}
+		
+		# Slope p values.
+		multres <- as.data.frame(cbind(t(pairmat)))
+		
+		# Slope test (default, stored in commoncoef element).
+		if(l$gt == "" | l$gt == "slopecom"){
+			pvalsSlope <- sapply(paircall, function(x)x$commoncoef$p)
+			multres$Pval <- pvalsSlope
+			multcompdone <- "slope"
+			
+			# Test stat., df. 
+			multres$TestStat <- sapply(paircall, function(x)x$commoncoef$LR)
+			multres$df <- sapply(paircall, function(x)x$commoncoef$df)
+			
+			# Slope values
+			multres$Slope1 <- sapply(paircall, function(x)x$commoncoef$bs[1,1])
+			multres$Slope2 <- sapply(paircall, function(x)x$commoncoef$bs[1,2])
+			
+		}
+		# elevation test, if performed.
+		if(l$gt == "elevcom"){
+			pvalsElev <- sapply(paircall, function(x)x$gtr$p)
+			multres$Pval <- pvalsElev
+			multcompdone <- "elevation"
+			
+			# Test stat., df. 
+			multres$TestStat <- sapply(paircall, function(x)x$gtr$stat)
+			multres$df <- sapply(paircall, function(x)x$gtr$df)
+			
+			# Elevation values.
+			multres$Elev1 <- sapply(paircall, function(x)x$gtr$as[1])
+			multres$Elev2 <- sapply(paircall, function(x)x$gtr$as[2])
+			
+		}
+		if(l$gt == "shiftcom"){
+			pvalsShift <- sapply(paircall, function(x)x$gtr$p)
+			multres$Pval <- pvalsShift
+			multcompdone <- "shift"
+			
+			# Test stat., df. 
+			multres$TestStat <- sapply(paircall, function(x)x$gtr$stat)
+			multres$df <- sapply(paircall, function(x)x$gtr$df)
+			
+			# Shift values.
+			multres$Shift1 <- sapply(paircall, function(x)x$gtr$f.mean[1])
+			multres$Shift2 <- sapply(paircall, function(x)x$gtr$f.mean[2])
+		}
+		
+		# Label first two variable names in multcomp result.
+		names(multres)[1:2] <- paste(l$groupvarname, "_", 1:2, sep="")
+		
+		# P-value Bonferroni adjustment
+		if(multcompmethod == "adjusted"){
+			adjusted.p.multi <- 1-(1-multres$Pval)^sum(multres$Pval >= 0,na.rm=TRUE)
+			multres$Pval <- adjusted.p.multi
+		}
+		l$multcompresult <- multres
+		l$multcompdone <- multcompdone
+		l$multcompmethod <- multcompmethod
+
+	}
+	if(!multcomp){
+		l$multcompresult <- NA
+		l$multcompdone <- "none"
+		l$multcompmethod <- NA
+	}
+	
+	# Now print warning that X or Y values were deleted (complicated here, because only print once).
+	thiscall <- as.list(match.call(expand.dots = TRUE))[-1]
+	if(!("dummy" %in% names(thiscall)) && xdel)warning("Deleted negative and/or zero values in X variable.")
+	if(!("dummy" %in% names(thiscall)) && ydel)warning("Deleted negative and/or zero values in Y variable.")
 	
     return(l)
 }

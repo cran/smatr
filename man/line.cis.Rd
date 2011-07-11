@@ -10,7 +10,7 @@
 \usage{
 line.cis(y, x, alpha = 0.05, data = NULL, 
 	method = "SMA", intercept = TRUE, robust=FALSE,
-	V = matrix(0, 2, 2), f.crit = 0)
+	V = matrix(0, 2, 2), f.crit = 0, ...)
 }
 
 \arguments{
@@ -34,6 +34,7 @@ line.cis(y, x, alpha = 0.05, data = NULL,
   }
   \item{robust}{If TRUE, uses a robust method to fit the lines.}
   \item{f.crit}{(optional - rarely required). The critical value to be used from the F distribution. (Only actually useful for reducing computation time in simulation work - otherwise, do not change.) }
+  \item{\dots}{Further parameters (not passed anywhere at the moment).}
 }
 
 \value{

@@ -19,13 +19,15 @@ plot.sma <- function(x, which=c("default","residual","qq"),  use.null=FALSE, add
 	if(!is.null(col[1])){	
 		if(length(col)== 1 &&  ngrps > 1)
 			col<-rep(col[1],ngrps); #check right vector length 
-	} else
+	} else {
 	#default colors
 		col <- c("blue2",  "goldenrod1", "firebrick2", "chartreuse4", "deepskyblue1", "darkorange1", 
 		"darkorchid3", "darkgrey", "mediumpurple1", "orangered2", "chocolate", "burlywood3",
 		"goldenrod4", "darkolivegreen2", "palevioletred3", "darkseagreen3", "sandybrown", "tan", 
 		"gold", "violetred4", "darkgreen")
-
+		col <- rep(col, ceiling(ngrps/length(col)))
+	}
+	
 	#---symbols--------------------------------	
 	#user-defined symbols
 	if(!is.null(pch[1])){	

@@ -87,6 +87,26 @@ print.sma <- function(x, ..., coefbygroup=FALSE){
 		
 		}
 		
+		# Multiple comparisons.
+		
+		if(obj$multcompdone != "none"){
+			cat("Results of multiple comparisons among groups.\n\n")
+			cat("Test for pair-wise difference in",obj$multcompdone,":\n")
+			#browser()
+			dfr <- obj$multcompresult
+			dfr[,3] <- format.pval(obj$multcompresult[,3])
+			print(dfr[,1:4])
+			cat("\n")
+			
+			if(obj$multcompmethod == "default")
+				cat("No adjustment of P values.\n")
+			if(obj$multcompmethod == "Bonferroni")
+				cat("Sidak adjustment of P values.\n")
+			sectionline()
+		}
+		
+		
+		
 		if(coefbygroup){
 		cat("Coefficients by group in variable \"",obj$groupvarname,"\"\n\n",sep="")
 		for(i in 1:ngroups){
@@ -106,9 +126,12 @@ print.sma <- function(x, ..., coefbygroup=FALSE){
 				cat("P-value :",format.pval(obj$slopetest[[i]]$p),"\n\n")
 			}
 		}
+		
 		cat("\n")
 		} else cat("Use the summary() function to print coefficients by group.\n")
 
+		
+		
 			
 	}
 	
@@ -126,4 +149,10 @@ print.sma <- function(x, ..., coefbygroup=FALSE){
 	
 	
 }
+
+
+
+
+
+
 
