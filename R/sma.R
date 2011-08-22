@@ -164,7 +164,7 @@ sma <- function(formula, data, subset, na.action, log='',
 			r2[[i]]<- cor(X, Y)^2
 			pval[[i]] <- cor.test(X, Y, method = "pearson")$p.value
 		} else {
-			r2[[i]] <- sum(X*Y)^2/(sum(X)^2 * sum(Y)^2)
+			r2[[i]] <- sum(X*Y)^2/(sum(X^2) * sum(Y^2))
 			pval[[i]] <- pf(r2[[i]]/(1-r2[[i]])*(n[[i]]-1),1,n[[i]]-1)  
 		}
 	  

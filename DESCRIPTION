@@ -1,6 +1,6 @@
 Package: smatr
-Version: 3.2.2
-Date: 2011-07-11
+Version: 3.2.3
+Date: 2011-08-22
 Title: (Standardised) Major Axis Estimation and Testing Routines
 Author: David Warton <David.Warton@unsw.edu.au>, Remko Duursma, Daniel
         Falster and Sara Taskinen.
@@ -16,6 +16,6 @@ Description: This package provides methods of fitting bivariate lines
         amongst several samples.
 License: GPL-2
 URL: http://web.maths.unsw.edu.au/~dwarton
-Packaged: 2011-07-11 03:03:14 UTC; 30022860
+Packaged: 2011-08-21 22:41:44 UTC; 30022860
 Repository: CRAN
-Date/Publication: 2011-07-23 14:42:49
+Date/Publication: 2011-08-22 05:13:44
