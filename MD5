@@ -1,4 +1,5 @@
-4ac6c161314dfdbc84e192b4ab3545dc *DESCRIPTION
+70b90c3291c528d60157c9bcff5449ed *DESCRIPTION
+f8b438d9fb8fe8d2c7f342c1600dae22 *NAMESPACE
 db7e34bb3d23d66512869be0e9cb4b87 *R/alpha.fun.R
 bebd0991ea26789759b6987531b15531 *R/b.com.est.R
 b7934e32ef492747f4c304d91a650c72 *R/coef.sma.R
@@ -7,7 +8,6 @@ ab59a98e2e9dd453ddd159c2dd6ec98b *R/com.ci.R
 d6a0b76d8f1ca4672eb74f82b893a81b *R/elev.com.R
 6b7ef496ca2d313e2e4b114c274acc47 *R/elev.test.R
 7b2808aa1ef551bf769a48467b74a1ab *R/fitted.sma.R
-299c66c30fc2de1b31fc0816e08d43ed *R/forced_sma.R
 561ac0da297a308139fa1fc5ae5fd951 *R/huber.M.R
 140a3fe8be888ebc3883ea4eea8892a9 *R/line.cis.R
 06c9ac5fc5bba76dc658845dfbd50364 *R/lr.b.com.R
@@ -23,10 +23,10 @@ ea426f52c28aa00552f1bb42117584a2 *R/plot.sma.R
 2af31ac52c8c24b657d92223ccbc076c *R/shift.com.R
 321eddac0d4763cd31e01b1476290865 *R/slope.com.R
 c7016522110d3667b7aa90dee08c3a10 *R/slope.test.R
-8361530bdf388570a24ad682ce0c9850 *R/sma.R
+4ea06c5778783e89d92e31494d88c916 *R/sma.R
 3120f99b96d938c7d29d057af7993810 *R/summary.sma.R
-75a78114ea8ec7387238eb1692bedc16 *data/leaflife.RData
-80b5023c0af7c9a0ccf77dce7e8d498d *data/leafmeas.RData
+9d97ff171fc01a8affa1ede912bd9e7d *data/leaflife.RData
+471ff62e889f2c3b4587afe0b94a926d *data/leafmeas.RData
 ea46ac72c12859255e29127dc54abd75 *man/alpha.fun.Rd
 15318b86e8599d19a04c130282ea5e0a *man/b.com.est.Rd
 b1549d733c866a5966ad39b595a9ad0f *man/coef.sma.Rd

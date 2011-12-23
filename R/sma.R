@@ -16,7 +16,8 @@ sma <- function(formula, data, subset, na.action, log='',
     mf$drop.unused.levels <- TRUE
     mf[[1L]] <- as.name("model.frame")
 	mf <- eval(mf, parent.frame())
-
+	if(ncol(mf) == 3)mf[,3] <- as.factor(mf[,3])
+	
 	# Throw out groups with <3 observations, if a grouping variable is used.
 	# (Otherwise, there are in total 2 rows of data, surely no user is that daft).
 	if(ncol(mf) == 3){
