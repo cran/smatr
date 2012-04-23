@@ -11,7 +11,7 @@ defineAxis<-function(major.ticks, limits=NULL, minor.ticks=NULL, major.tick.labe
 	l$both.sides <- both.sides
 	
 	#remove any duplicates of primary ticks in seconday ticks
-	if(is.null(minor.ticks)){
+	if(!is.null(minor.ticks)){
 		cull <- NULL
 		for(i in 1:length(minor.ticks)){
 			if(any(abs(minor.ticks[i]-major.ticks) < .Machine$double.eps ^ 0.5))

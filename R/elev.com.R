@@ -1,6 +1,6 @@
 
 elev.com <- function( y, x, groups, data=NULL, method="SMA", alpha=0.05, V=array( 0, c( 2,2,length(unique(groups)) ) ), 
-	group.names=sort(unique(groups)) )
+    group.names=sort(unique(groups)) )
 {
     if ( is.null(data)==FALSE )
     {
@@ -52,12 +52,17 @@ elev.com <- function( y, x, groups, data=NULL, method="SMA", alpha=0.05, V=array
     a      <- (matrix(1,1,g)%*%sinv%*%as)/ sum( sum( sinv) )
     vara   <- 1 / sum( sum( sinv ) )
     crit   <- qchisq( 1 - alpha, 1 )
+    crits  <- qt( 1 - alpha/2, n-2 )
     a.ci   <- c( a - sqrt( crit*vara), a + sqrt( crit*vara ) )
+    as.ci  <- as + cbind(0, - crits*sqrt(diag(varas)), crits*sqrt(diag(varas)) )
+	
+    dimnames(as.ci)[[1]] = group.names
+    dimnames(as.ci)[[2]] <- c("elevation","lower CI limit","upper CI limit")
 
     if ( is.null(data)==FALSE )
     {
         detach(data)
     }
 
-    list( stat=stat, p=pvalue , a=a, ci=a.ci, as=as, df=df )
+    list( stat=stat, p=pvalue , a=a, ci=a.ci, as = as.ci, df=df )
 }

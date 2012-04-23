@@ -1,6 +1,7 @@
 
 plot.sma <- function(x, which=c("default","residual","qq"),  use.null=FALSE, add=FALSE, type='o', 
-	xaxis=NULL, yaxis=NULL, xlab=NULL, ylab=NULL, pch=NULL, col=NULL, lty=NULL, from=NULL, to = NULL, log=x$log, frame.plot = TRUE, tck=par("tck"),...){
+	xaxis=NULL, yaxis=NULL, xlab=NULL, ylab=NULL, pch=NULL, col=NULL, lty=NULL, from=NULL, to = NULL, log=x$log, 
+	frame.plot = TRUE, tck=par("tck"),...){
 
 	#preprocessing ------------------------------------------------------------
 	obj <- x  # this needed for consistency with plot

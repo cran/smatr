@@ -166,7 +166,7 @@ sma <- function(formula, data, subset, na.action, log='',
 			pval[[i]] <- cor.test(X, Y, method = "pearson")$p.value
 		} else {
 			r2[[i]] <- sum(X*Y)^2/(sum(X^2) * sum(Y^2))
-			pval[[i]] <- pf(r2[[i]]/(1-r2[[i]])*(n[[i]]-1),1,n[[i]]-1)  
+			pval[[i]] <- 1 - pf(r2[[i]]/(1-r2[[i]])*(n[[i]]-1),1,n[[i]]-1)  
 		}
 	  
       	# Test slope against some specified value
@@ -193,6 +193,7 @@ sma <- function(formula, data, subset, na.action, log='',
       	#determine range of fitted values (as X value)
         B <- coeff[[i]][2,1]
 		a <- coeff[[i]][1,1]
+		
         if(method=="SMA"){
   	    	from[[i]] <- (min(Y+B*X) - a)/(2.0*B) 
   	    	to[[i]] <-(max(Y+B*X)-a)/(2.0*B)
@@ -276,11 +277,11 @@ sma <- function(formula, data, subset, na.action, log='',
 			Y <- mf[grps == lv[i],1]
 			a <- mean(Y) - bcom*mean(X)
 			b <- bcom
-
 			coeff[[i]][,1] <- c(a,b)
 			coeff[[i]][2,2:3] <- commonslopetest$ci
 			
-			coeff[[i]][1,2:3] <- c(NA,NA)
+			# Fix January 2012. New elev.com now reports CIs by group.
+			if(grouptest=="elevcom")coeff[[i]][1,2:3] <- grouptestresult$as[i,2:3]
 		}
 		
 		if(grouptest == "elevcom"){

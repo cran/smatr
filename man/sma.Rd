@@ -12,7 +12,7 @@ measurement error variance is known, and use robust estimation to ensure that in
 the presence of outliers (currently implemented for single samples only).}
 
 \usage{
-sma(formula, data, subset, na.action, log='',
+sma(formula, data, subset, na.action, log="",
 	 method=c("SMA","MA","OLS"), type=c("elevation","shift"), alpha=0.05, 
 	 slope.test=NA, elev.test=NA, multcomp=FALSE, multcompmethod=c("default","adjusted"),
 	 robust=FALSE,V=matrix(0,2,2), 
@@ -104,6 +104,8 @@ An object of class \code{sma} or \code{ma}, which contains the following output 
 }
 
 \references{ 
+Warton, D.I., R.A. Duursma, D.S. Falster and S. Taskinen (2012). smatr 3 - an R package for estimation and inference about allometric lines. \emph{Methods in Ecology and Evolution}. \bold{3}, 257-259.
+
 Warton D. I. and Weber N. C. (2002) Common slope tests for bivariate structural relationships.  \emph{Biometrical Journal} \bold{44}, 161--174.
 
 Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291.
@@ -142,8 +144,8 @@ leaf.low.soilp <- subset(leaflife, soilp == 'low')
 
 # Fit SMA's separately at each of high and low rainfall sites,
 # and test for common slope:
-com.test=sma(longev~lma*rain, log="xy", data=leaf.low.soilp)
-print(com.test)
+com.test <- sma(longev~lma*rain, log="xy", data=leaf.low.soilp)
+com.test
 
 # Plot longevity vs LMA separately for each group:
 plot(com.test)
