@@ -6,7 +6,7 @@
   This can now be done via \code{sma(y~x+groups)}, see help on the \code{\link{sma}} function.
 }
 \usage{
-elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05,
+elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05, robust=FALSE,
   V = array(0, c(2, 2, length(unique(groups)))),
   group.names = sort(unique(groups)))
 }
@@ -14,7 +14,7 @@ elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05,
   \item{y}{ The Y-variable for all observations (as a vector). }
   \item{x}{ The X-variable for all observations (as a vector). }
   \item{groups}{ Coding variable identifying which group each observation belongs to (as a factor or vector). }
-  \item{data}{ (Optional) data frame containing the data. }
+  \item{data}{ Deprecated. Use with() instead (see Examples).}
   \item{method}{ The line fitting method: 
     \describe{
       \item{'SMA' or 1}{ standardised major axis (this is the default) }
@@ -22,6 +22,7 @@ elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05,
     }
   }
   \item{alpha}{ The desired confidence level for the 100(1-alpha)\% confidence interval for the common elevation. (Default value is 0.05, which returns a 95\% confidence interval.) }
+  \item{robust}{If TRUE, uses a robust method to fit the lines and construct the test statistic.}
   \item{V}{ The estimated variance matrices of measurement error, for each group. This is a 3-dimensional array with measurement error in Y in the first row and column, error in X in the second row and column,and groups running along the third dimension. Default is that there is no measurement error. }
   \item{group.names}{ (optional: rarely required). A vector containing the labels for `groups'. (Only actually useful for reducing computation time in simulation work). }
 }
@@ -48,10 +49,15 @@ elev.com(y, x, groups, data = NULL, method = 'SMA', alpha = 0.05,
 
   The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using the \code{\link{plot.sma}} function. On a residual plot, if there is a distinct increasing or decreasing trend within any of the groups, this suggests that all groups do not share a common slope.
 
+  Setting \code{robust=TRUE} fits lines using Huber's M estimation, and modifies the test statistic as proposed in Taskinen & Warton (in review).
+
   The common slope (\eqn{\hat{\beta}}{b}) is estimated from a maximum of 100 iterations, convergence is reached when the change in \eqn{\hat{\beta} < 10^{-6}}{b < 10^-6}.
 }
-\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291. }
-\author{ Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08 }
+\references{ Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291.
+
+Taskinen, S. and D.I. Warton. in review. Robust tests for one or more allometric lines.
+}
+\author{Warton, D.I.\email{David.Warton@unsw.edu.au}, J. Ormerod, & S. Taskinen}
 
 \seealso{ \code{\link{sma}}, \code{\link{plot.sma}}, \code{\link{line.cis}}, \code{\link{slope.com}}, \code{\link{shift.com}} }
 
@@ -62,17 +68,17 @@ data(leaflife)
 # Test for common SMA slope amongst species at low soil nutrient sites
 # with different rainfall:
 leaf.low.soilp <- subset(leaflife, soilp == 'low')
-slope.com(log10(longev), log10(lma), rain, data=leaf.low.soilp)
+with(leaf.low.soilp, slope.com(log10(longev), log10(lma), rain))
 
 # Now test for common elevation of the groups fitted with an axis
 # of common slope, at low soil nutrient sites:
-elev.com(log10(longev), log10(lma), rain, data = leaf.low.soilp)
+with(leaf.low.soilp, elev.com(log10(longev), log10(lma), rain))
 
 # Or test for common elevation amongst the MA's of common slope,
 # for low soil nutrient sites, and construct 99% a confidence interval
 # for the common elevation:
-elev.com(log10(longev), log10(lma), rain, method='MA',
-    data = leaf.low.soilp, alpha=0.01)  
+with(leaf.low.soilp, elev.com(log10(longev), log10(lma), rain, method='MA',
+   alpha=0.01))
 }
 
 \keyword{ htest }

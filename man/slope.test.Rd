@@ -9,7 +9,7 @@
 
 \usage{
     slope.test(y, x, test.value = 1, data=NULL, method = SMA,
-        alpha = 0.05, V = matrix(0,2,2), intercept = TRUE )
+        alpha = 0.05, V = matrix(0,2,2), intercept = TRUE, robust=FALSE )
 
 }
 
@@ -17,7 +17,7 @@
   \item{y}{ The Y-variable }
   \item{x}{ The X-variable }
   \item{test.value}{ The hypothesised value of the slope (default value is 1) }
-  \item{data}{ (optional) data frame containing the data }
+  \item{data}{Deprecated. Use with() instead (see Examples). }
   \item{method}{ The line fitting method:
     \describe{
       \item{'OLS' or 0}{linear regression}
@@ -26,6 +26,7 @@
     }
   }
   \item{alpha}{ The desired confidence level for the 100(1-alpha)\% confidence interval for the common slope. (Default value is 0.05, which returns a 95\% confidence interval.) }
+  \item{robust}{If TRUE, uses a robust method to fit the lines and construct the test statistic.}
   \item{V}{ The estimated variance matrix of measurement error. Average measurement error for Y is in the first row and column, and average measurement error for X is in the second row and column. The default is that there is no measurement error. }
   \item{intercept}{ (logical) Whether or not the line includes an  intercept.
     \describe{
@@ -33,7 +34,6 @@
       \item{TRUE}{ an intercept is fitted (this is the default) }
     }
   }
-
 }
 
 \value{
@@ -62,17 +62,19 @@ The test assumes the following:
 
 The assumptions can be visually checked by plotting residual scores against fitted axis scores, and by constructing a Q-Q plot of residuals against a normal distribution, available using the \code{\link{plot.sma}} function.
 
+Setting \code{robust=TRUE} fits lines using Huber's M estimation, and modifies the test statistic as proposed in Taskinen & Warton (in review).
+
 }
 
 \references{ 
 
 Warton D. I., Wright I. J., Falster D. S. and Westoby M. (2006) A review of bivariate line-fitting methods for allometry.  \emph{Biological Reviews} \bold{81}, 259--291.
 
-Taskinen S. and Warton D. I. (in press) Robust estimation and inference for bivariate line-fitting in allometry.  \emph{Biometrical Journal}.
+Taskinen, S. and D.I. Warton. in review. Robust tests for one or more allometric lines.
 
 }
 
-\author{Warton, D. \email{David.Warton@unsw.edu.au}, translated to R by Ormerod, J. 2005-12-08}
+\author{Warton, D.I.\email{David.Warton@unsw.edu.au}, J. Ormerod, & S. Taskinen}
 
 \seealso{\code{\link{sma}}, \code{\link{line.cis}}, \code{\link{elev.test}} }
 
@@ -81,15 +83,14 @@ Taskinen S. and Warton D. I. (in press) Robust estimation and inference for biva
 data(leaflife)
 
 #consider only the low rainfall sites:
-leaf.low.rain=leaflife[leaflife$rain=='low',]
+leaf.low.rain <- leaflife[leaflife$rain=='low',]
 
 #test if the SMA slope amongst species at low rainfall sites is 1,
 #for log (base 10) transformed data:
-slope.test(log10(longev), log10(lma), data=leaf.low.rain)
+with(leaf.low.rain, slope.test(log10(longev), log10(lma)))
     
 #test if the MA slope is 2/3
-slope.test(log10(longev), log10(lma), data=leaf.low.rain,
-   test.value = 2/3, method = 'MA')
+with(leaf.low.rain, slope.test(log10(longev), log10(lma), test.value = 2/3, method = 'MA'))
 }
 
 \keyword{htest}
